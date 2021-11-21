@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using AppDatabase;
+using SacGoAPI.Models;
 
 namespace SacGoAPI.Controllers
 {
@@ -30,8 +31,19 @@ namespace SacGoAPI.Controllers
 
             // invoke base method GET from parent class
             return this.Get("VIEW_PLACE_CATEGORIES", parameters);
+        }
 
+        // POST
+        // saves a place category
+        [HttpPost]
+        public JsonResult Post(PlaceCategory pc)
+        {
+            List<SQLParameter> parameters = new List<SQLParameter> {
+                new SQLParameter("@name", (object)pc.name, SqlDbType.VarChar)
+            };
 
+            // invoke base method GET from parent class
+            return this.Post("ADD_NEW_PLACE_CATEGORY", parameters);
         }
     }
 }

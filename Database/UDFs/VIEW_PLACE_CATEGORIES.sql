@@ -1,8 +1,14 @@
+Use SacGo
+GO
 
-SET ANSI_NULLS ON
+IF EXISTS
+(select * from Information_schema.Routines where SPECIFIC_SCHEMA='dbo' 
+AND SPECIFIC_NAME = 'VIEW_PLACE_CATEGORIES' AND Routine_Type='FUNCTION')
+begin
+	drop function dbo.VIEW_PLACE_CATEGORIES
+end
 GO
-SET QUOTED_IDENTIFIER ON
-GO
+
 -- =============================================
 -- Author:		Aryan Maroufkhani
 -- Description:	Get place categories

@@ -24,5 +24,11 @@ namespace SacGoAPI.Controllers
             return sqlHandler.callUDF(udfName, parameters);
 
         }
+
+        public JsonResult Post(string sprocName, List<SQLParameter> parameters)
+        {
+            SQLHandler sqlHandler = new SQLHandler(_configuration, AppConstants.AppConnectionString);
+            return sqlHandler.execSPROC(sprocName, parameters);
+        }
     }
 }

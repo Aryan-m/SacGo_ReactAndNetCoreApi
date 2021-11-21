@@ -8,18 +8,20 @@ namespace AppDatabase
 {
     /*************************************************************
      * A simplified version of System.Data.SqlClientSqlParameter
+     * 
+     * represents a SQL function parameter class
      * ***********************************************************/
     public class SQLParameter
     {
-        public string ParameterName;
-        public object Value;
-        public SqlDbType SqlDbType;
+        public string name;
+        public object value;
+        public SqlDbType sqlDbType;
 
-        public SQLParameter(string parameterName, object value, SqlDbType sqlDbType)
+        public SQLParameter(string name, object value, SqlDbType sqlDbType)
         {
-            ParameterName = parameterName;
-            Value = value;
-            SqlDbType = sqlDbType;
+            this.name = name;
+            this.value = value;
+            this.sqlDbType = sqlDbType;
         }
     }
 }

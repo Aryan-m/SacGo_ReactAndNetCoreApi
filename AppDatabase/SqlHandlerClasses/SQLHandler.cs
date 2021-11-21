@@ -24,8 +24,12 @@ namespace AppDatabase
             this.connectionString = connectionString;
         }
 
-        public JsonResult callUDF(string udfName, List<SQLParameter> parameters) {  
-            DataTable dt = new DataTable(); 
+        /****************************************************************************
+         * sets up proper SqlClient parameters and calls a table valued SQL UDF
+         * **************************************************************************/
+        public DataTable execSqlFunction(ISqlMethod sqlMethod)
+        {
+            DataTable dt = new DataTable();
 
             // sql instance
             string sqlDataSrc = _configuration.GetConnectionString(connectionString);
@@ -40,13 +44,12 @@ namespace AppDatabase
                 {
                     // set UDF info
                     cmd.Connection = sqlConnection;
-                    cmd.CommandText = $"select * from dbo.{ udfName } ( "
-                                    + $"{ string.Join(",", parameters.Select(x => x.ParameterName.ToString())) } )";
+                    cmd.CommandText = sqlMethod.createQuery();
 
                     // add parameters
-                    foreach (SQLParameter param in parameters)
+                    foreach (SQLParameter param in sqlMethod.parameters)
                     {
-                        cmd.Parameters.Add(param.ParameterName, param.SqlDbType).Value = param.Value ?? (object)DBNull.Value;
+                        cmd.Parameters.Add(param.name, param.sqlDbType).Value = param.value ?? (object)DBNull.Value;
                     }
 
                     // execute query
@@ -59,7 +62,36 @@ namespace AppDatabase
                 sqlConnection.Close();
 
                 // return results
-                return new JsonResult(dt);
+                return dt;
+            }
+        }
+
+        /****************************************************************************
+         * calls a table valued SQL UDF
+         * **************************************************************************/
+        public JsonResult callUDF(string udfName, List<SQLParameter> parameters) {                                      
+            try
+            {
+                return new JsonResult(execSqlFunction(new SqlUdf(udfName, parameters)));
+            }
+            catch (Exception e)
+            {
+                return new JsonResult(e.Message);
+            }
+        }
+
+        /****************************************************************************
+         * executes a SQL SPROC
+         * **************************************************************************/
+        public JsonResult execSPROC(string sprocName, List<SQLParameter> parameters) {
+            try
+            {
+                execSqlFunction(new SqlSproc(sprocName, parameters));
+                return new JsonResult("Success");
+            }
+            catch (Exception e)
+            {
+                return new JsonResult(e.Message);
             }
         }
     }
